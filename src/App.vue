@@ -1,18 +1,62 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <Header
+    :number_correct="number_correct"
+    :number_total="number_total"
+     />
+    <b-container class="bv-example-row">
+      <b-row>
+        <b-col  sm="6" offset="3">
+          <QuestionBox
+                  v-if = "questions.length"
+            :current_question = "questions[index]"
+            :next = "next" :increment="increment"
+          />
+        </b-col>
+      </b-row>
+    </b-container>
   </div>
 </template>
-
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Header from './components/Header.vue'
+import QuestionBox from "./components/QuestionBox";
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
-  }
+    Header, QuestionBox
+  },
+  data() {
+      return{
+        questions: [],
+        index: 0,
+        number_correct: 0,
+        number_total: 0,
+        users: null
+      }
+  },
+  methods: {
+    next(){
+      this.index++;
+    },
+    increment(is_correct){
+        if(is_correct){
+          this.number_correct++
+        }
+    this.number_total++
+    }
+  },
+  mounted: function () {
+      fetch('https://opentdb.com/api.php?amount=10&category=27&type=multiple',  {
+        method: 'get'
+      })
+      .then( response => {
+        return (response.json());
+      })
+      .then(myData => {
+        this.questions = myData.results;
+      })
+    }
 }
 </script>
 
